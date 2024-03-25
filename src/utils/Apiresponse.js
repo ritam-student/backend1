@@ -1,3 +1,5 @@
+//standadized the api response => selecting the general format of an Api response
+
 class Apiresponse {
     constructor (statusCode, data, message = success) {
         this.statusCode = statusCode
