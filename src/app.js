@@ -9,7 +9,7 @@ app.use (cors({
     credentials : true
 }))
 
-app.use(express.json({limit : "16kb"}))
+app.use(express.json({limit : "16kb"}))            // to except json file from user
 app.use(express.urlencoded({extended : true, limit : "kb"}))
 app.use(express.static("public"))
 app.use(cookieParser())
