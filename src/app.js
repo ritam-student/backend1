@@ -9,9 +9,9 @@ app.use (cors({
     credentials : true
 }))
 
-app.use(express.json({limit : "16kb"}))            // to except json file from user
-app.use(express.urlencoded({extended : true, limit : "kb"}))
-app.use(express.static("public"))
-app.use(cookieParser())
+app.use(express.json({limit : "16kb"}))            // to except data in the form of json file from user
+app.use(express.urlencoded({extended : true, limit : "16kb"}))      // to encode data from url
+app.use(express.static("public"))     // to store temporary files , img in 'public' folder before uploading on database
+app.use(cookieParser())    // to access and perform CRUD operation on users cookies that only can send the server and access it.
 
 export {app};
