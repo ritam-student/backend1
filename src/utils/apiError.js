@@ -1,11 +1,11 @@
 class ApiError extends Error {
     constructor (
         statusCode,
-        message = "something went wrong",
+        message = "something went wrong",   // bydefault message
         errors = [],
-        statck = ""
+        stack = ""      // error stack
     ){
-        super (message)
+        super (message)          // this calls the constructor of the parent class ('Error'), passing the 'message'property of the error
         this.statusCode = statusCode
         this.data = null
         this.message = message
@@ -13,10 +13,10 @@ class ApiError extends Error {
         this.errors = errors
 
 
-        if (statck) {
-            this.statck = statck
+        if (stack) {
+            this.stack = stack
         }else {
-            Error.captureStackTrace(this,this.constructor)
+            Error.captureStackTrace(this,this.constructor)     // built in method in Node.js for capturing stack trace
         }
     }
 }

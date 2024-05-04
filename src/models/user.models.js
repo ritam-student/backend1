@@ -29,13 +29,15 @@ const userSchema = new mongoose.Schema(
             type : String,          // cloudinary url
             required : true,
         },
-        avatar : {
-            type : String,          
+        coverImage : {
+            type : String,          // cloudinary url 
         },
-        watchhistory : {           // depends on videos 
-            type : mongoose.Schema.Types.ObjectId,
-            ref : "video"
-        },
+        watchhistory : [             // depends on videos 
+            {           
+                type : mongoose.Schema.Types.ObjectId,
+                ref : "video"
+            }
+        ],
         password : {
             type : String,
             required : [true, 'password is required']           //custom message 

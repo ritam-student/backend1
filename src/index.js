@@ -7,8 +7,8 @@ dotenv.config ({
 });
 
 connectDB()
-.then(() => {
-    app.on ("error", (err) => {
+.then(() => {                                   // to handle promises
+    app.on ("error", (err) => {                 // listening an event named 'error' 
         console.log ("error is : ", err);
     })
     app.listen (process.env.PORT || port , () => {
