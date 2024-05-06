@@ -1,5 +1,5 @@
 
-import connectDB from "./db/index.js";
+import connectDB from "./db/index.js";        // as 'connectdb' exports default
 import dotenv from "dotenv";          // require('dotenv').config({path : './env'})       another way to use dotENV
 dotenv.config ({
     path : "./env"
