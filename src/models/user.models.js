@@ -52,10 +52,10 @@ const userSchema = new mongoose.Schema(
 );
 
 
-userSchema.pre("save",async function (next) {             // hook
-    if (!this.isModified("password")) return next();
+userSchema.pre("save",async function (next) {             // middleware function , // it listen for the 'save' event
+    if (!this.isModified("password")) return next();       // check whether password is changed or not
     this.password = bcrypt.hash(this.password,10)
-    next()
+    next()                                              // indicates that the middleware function has executed 
 });
 
 userSchema.methods.isPasswordCorrect = async function (password) {
@@ -64,7 +64,7 @@ userSchema.methods.isPasswordCorrect = async function (password) {
 
 userSchema.methods.generateAccessToken = function () {
     return jwt.sign({
-        _id : this.id,
+        _id : this._id,
         email : this.email,
         username : this.username,
         fullname : this.fullname
