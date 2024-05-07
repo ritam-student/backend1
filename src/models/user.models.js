@@ -34,7 +34,7 @@ const userSchema = new mongoose.Schema(
         coverImage : {
             type : String,          // cloudinary url 
         },
-        watchhistory : [             // depends on videos 
+        watchhistory : [             // depends on videos           // add later
             {           
                 type : mongoose.Schema.Types.ObjectId,
                 ref : "video"
@@ -44,7 +44,7 @@ const userSchema = new mongoose.Schema(
             type : String,
             required : [true, 'password is required']           //custom message 
         },
-        refreshtoken : {
+        refreshtoken : {                                         // add later
             type : String
         }
     },
@@ -54,7 +54,7 @@ const userSchema = new mongoose.Schema(
 
 userSchema.pre("save",async function (next) {             // middleware function , // it listen for the 'save' event
     if (!this.isModified("password")) return next();       // check whether password is changed or not
-    this.password = bcrypt.hash(this.password,10)
+    this.password = await bcrypt.hash(this.password,10)
     next()                                              // indicates that the middleware function has executed 
 });
 
