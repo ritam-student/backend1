@@ -11,7 +11,7 @@ connectDB()
         console.log ("error is : ", err);
     })
     app.listen (process.env.PORT || 8000 , () => {
-        console.log(`server is running at port :  $  {process.env.PORT} `);
+        console.log(`server is running at port :  ${process.env.PORT} `);
     })
 })
 .catch((err) => {
