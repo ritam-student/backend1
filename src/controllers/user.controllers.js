@@ -5,6 +5,7 @@ import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { Apiresponse } from "../utils/Apiresponse.js";
 import jwt from "jsonwebtoken";
 
+// req.user?._id returns a string , but when we pass this inside 'User.findById()' mongoose change it and make it mongodb ID
 
 const generateAccessAndRefreshToken = async (userId) => {             // method to generate access and refresh token
     try {
@@ -96,7 +97,9 @@ const registerUser = asyncHandler ( async (req,res) => {
         throw new ApiError(500, "Try sometimes later...");
     }
     // step 9 : return response to frontend
-    return res.status(200).json(
+    return res
+    .status(200)
+    .json(
         new Apiresponse(200,createdUser,"user register successfully..")
     )
 })
@@ -248,7 +251,7 @@ const changeCurrentPassword = asyncHandler (async (req,res) => {
 
 const getCurrentUser = asyncHandler(async (req,res)=> {
     try {
-        const user = await User.findById(req.user?._id).select({"-password -refreshtoken"})
+        const user = await User.findById(req.user?._id).select("-password -refreshtoken")
         return res
         .status(200)
         .json(new Apiresponse(200,user,"fetch details successfully"))
@@ -270,7 +273,8 @@ const updateAccountDetails = asyncHandler (async (req, res) => {
                 fullname: newFullname,
                 email: newEmail
             }
-        },{
+        },
+        {
             new : true
         }
     ).select("-password -refreshtoken")
@@ -335,6 +339,118 @@ const updatecoverImage = asyncHandler(async (req,res) => {
 })
 
 
+const getUserChanelProfile = asyncHandler (async (req,res) => {
+    const {username} = req.params;   // take it from 'URL' of the chanel when viewer hit the url
+    // if username exists or not 
+    if (!username) {
+        throw new ApiError(400, "username does not exist..");
+    }
+    // aggregate pipelines return array
+    const channel = await User.aggregate([
+        {
+            $match: {
+                username: username?.toLowerCase()     // match from the database based on username
+            }
+        },
+        {
+            $lookup:{    // to find no of subscriber of a particular username/channel (above mention 'username')
+                from: "subscriptions",  // model name
+                localField: "_id",
+                foreignField: "channel",
+                as: "subscribers"   // name of the field
+            }
+        },
+        {
+            $lookup: {   // no of channel has alresdy subscribed by 'user'
+                from:"subscriptions",
+                localField: "_id",
+                foreignField: "subscriber",
+                as: "subscribedTo" // name of the field
+            }
+        },
+        {       // user model a jkota field acha tar sathe subscriber and subscribedTo ae field 2to add kore daba
+            $addFields: {
+                subscribersCount : {
+                    $size: "$subscribers"    // name of the field so '$' is used 
+                },
+                channelsSubscribedToCount : {
+                    $size: "$subscribedTo"   // name of the field so '$' is used
+                },
+                isSubscribed: { // now return a true or false message based on which frontend can understand whether channel is subscribed or not
+                    $cond: {
+                        if: {$in: [req.user?._id, "$subacribers.subscriber"]},
+                        then: true ,
+                        else: false
+                    }
+                }
+            }
+        },
+        {  // select some fields that is going to send when someone ask for this 
+            $project: {
+                fullname : 1,
+                email: 1,
+                username: 1,
+                subscribersCount: 1,
+                channelsSubscribedToCount: 1,
+                isSubscribed: 1,
+                avatar: 1,
+                coverImage: 1
+            }
+        }
+         
+    ])
+    if (!channel?.length) {
+        throw new ApiError(400, "channel doesnot exists...")
+    }
+    return res
+    .status(200)
+    .json(new Apiresponse(200,channel[0],"user channel fetch successfully..."))
+})
+
+
+const getWatchHistory = asyncHandler (async (req,res)=> {
+    const user = await User.aggregate([
+        {
+            $match: {
+                _id: new mongoose.Types.ObjectId(req.user?._id)  // find user // here mongoose convert string into  mongodb _id automatically
+            }
+        },
+        {
+            $lookup: {
+                from:"videos",
+                localField: "watchHistory",
+                foreignField: "_id",
+                as: "watchHistory",
+                pipeline: [
+                    {
+                        $lookup: {
+                            from: "users",
+                            localField: "owner",
+                            foreignField: "_id",
+                            as: "owner",
+                            pipeline: [
+                                {
+                                    $project: {
+                                        username: 1,
+                                        fullname: 1,
+                                        avatar: 1
+                                    }
+                                }
+                            ]
+                        }
+                    }   // 20
+                ]
+            }
+        }
+    ])
+
+    return res
+    .status(200)
+    .json(new Apiresponse(200, user[0].watchHistory,"watch history fetch successfully..."))
+})
+
+
+
 
 export {
     registerUser,
@@ -345,5 +461,7 @@ export {
     getCurrentUser,
     updateAccountDetails,
     updateAvatar,
-    updatecoverImage
+    updatecoverImage,
+    getUserChanelProfile,
+    getWatchHistory
 };
