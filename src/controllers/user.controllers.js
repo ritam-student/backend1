@@ -1,15 +1,15 @@
-import { asyncHandler } from "../utils/asyncHandler.js";
-import { ApiError } from "../utils/apiError.js";
-import { User } from "../models/user.models.js";
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
-import { Apiresponse } from "../utils/Apiresponse.js";
-import jwt from "jsonwebtoken";
+import { asyncHandler } from "../utils/asyncHandler.js";  // utility function for handling asynchronous opperation
+import { ApiError } from "../utils/apiError.js";  // utility function for handling api response while facing errors
+import { User } from "../models/user.models.js";   // data model for a user object
+import { uploadOnCloudinary } from "../utils/cloudinary.js";  // utility function to upload files on cloudinary
+import { Apiresponse } from "../utils/Apiresponse.js";  // utility function for handling api response after success
+import jwt from "jsonwebtoken";  // this library commonly used for generating and verifying json web tokens
 
 // req.user?._id returns a string , but when we pass this inside 'User.findById()' mongoose change it and make it mongodb ID
 
 const generateAccessAndRefreshToken = async (userId) => {             // method to generate access and refresh token
     try {
-        const user = await User.findById(userId);
+        const user = await User.findById(userId);  // it returns : a user object that contains all the details of the user(username, email...) if the 'userId' is found  in database else return 'null or undefined'
         const accessToken = user.generateAccessToken();
         const refreshToken = user.generateRefreshToken();
         user.refreshtoken = refreshToken;
