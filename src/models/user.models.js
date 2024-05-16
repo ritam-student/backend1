@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import bcrypt from "bcrypt";
+import bcrypt from "bcrypt";   // library used for password hashing 
 import jwt from "jsonwebtoken";
 
 // creating an user model
@@ -11,7 +11,7 @@ const userSchema = new mongoose.Schema(
             required : true,
             unique : true ,
             lowercase : true,
-            trim : true,
+            trim : true,            // option used to remove white spaces from a string
             index : true              // helps in searching from db
         },
         email : {
@@ -94,6 +94,8 @@ userSchema.methods.generateRefreshToken = function () {            // refresh to
  * and signing it with a secret key to create a token.
  * this JWT consists 3 parts -> header , payload(data, expiration time and secret token ) , signature. and the payload and header is connected 
  * with a period('.') separator
+ * User : it is a model representing users in a database , it encapsulates the logic for interacting with the database collection that stores  
+ * users data 
  */
 
 export const User = mongoose.model("User",userSchema);
