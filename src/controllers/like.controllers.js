@@ -28,11 +28,13 @@ const toggleVideoLike = asyncHandler (async (req, res) => {
             }
         },
         {
-            isLiked: {
-                $cond: {
-                    if: {$in: [req.user?._id, "$likedUser.likedBy"]},
-                    then: true ,
-                    else: false
+            $addFields: {
+                isLiked: {
+                    $cond: {
+                        if: {$in: [req.user?._id, "$likedUser.likedBy"]},
+                        then: true ,
+                        else: false
+                    }
                 }
             }
         },
