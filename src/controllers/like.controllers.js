@@ -38,6 +38,12 @@ const toggleVideoLike = asyncHandler (async (req, res) => {
                 }
             }
         },
+        {  // select some fields that is going to send when someone ask for this 
+            $project: {
+                isLiked: 1,
+                _id: 1
+            }
+        }
     ])
 })
 
